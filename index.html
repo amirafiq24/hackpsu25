@@ -249,59 +249,23 @@
         return;
       }
 
-      const prompt = `You are a task planner. Break down the task: "${task}" over ${days} days into a structured weekly plan. Each week should have a title and a goal. Each day should have a date label and a list of subtasks. Format your response as structured JSON like this:
-
-    {
-      "workflow": [
-        {
-          "week": "Week 1 (March 31 - April 4)",
-          "goal": "Your weekly goal here",
-          "days": [
-            {
-              "date": "March 31 (Mon)",
-              "tasks": ["task 1", "task 2"]
-            }
-          ]
-        }
-      ]
-    }`;
-
       try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch("http://127.0.0.1:5000/generate-plan", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "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" // Replace this with your real key
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "user",
-                content: prompt
-              }
-            ],
-            temperature: 0.7
-          })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task, days })
         });
 
         const data = await response.json();
-        const reply = data.choices?.[0]?.message?.content;
-
-        if (!reply) {
-          alert("No response from OpenAI.");
-          return;
-        }
-
-        const parsed = JSON.parse(reply); // Make sure it's valid JSON
-        displayChecklist(parsed.workflow);
+        displayChecklist(data.workflow);
         document.getElementById("reviewSection").style.display = "block";
         document.getElementById("checklistTitle").style.display = "block";
-      } catch (err) {
-        console.error("Error:", err);
-        alert("Something went wrong: " + err.message);
+      } catch (error) {
+        console.error(error);
+        alert("Failed to fetch plan from AI.");
       }
     }
+
 
     function displayChecklist(workflowData) {
       const checklistDiv = document.getElementById("checklist");
