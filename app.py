@@ -17,39 +17,46 @@ def generate_plan():
     days = data.get('days')
 
     prompt = f"""
-            You are a task planner. Break down the task: "{task}" over exactly {days} day(s). The task should be spread out across all {days} days — do not compress or shorten it. Do not return fewer than {days} days.
+You are a task planner. Break down the task: "{task}" into a plan of exactly {days} day(s). Do not exceed {days} days in total.
 
-            Rules:
-            - Every 7 days, start a new week. For example:
-            - Days 1–7 = Week 1
-            - Days 8–14 = Week 2
-            - Days 15–21 = Week 3
-            - Each week must contain:
-            - A title like "Week 1", "Week 2", etc.
-            - A short goal summarizing that week's focus
-            - Each day must contain:
-            - A "date" like "Day 1", "Day 2", ..., up to "Day {days}"
-            - A list of subtasks for that day
+🛠️ Instructions:
+- Do NOT use "Week 1", "Week 2", etc.
+- Instead, group the breakdown by **goal or phase of work**.
+- Each goal block should include:
+  - A clear "goal" title
+  - A list of days with specific tasks
+- Start a new goal block **only** when the focus or phase of the work changes.
 
-            Example format:
+📆 Each day should include:
+- A label like "Day 1", "Day 2", ..., up to "Day {days}"
+- A list of clear, actionable tasks for that day
 
-            {{
-            "workflow": [
-                {{
-                "week": "Week 1",
-                "goal": "Your weekly goal",
-                "days": [
-                    {{
-                    "date": "Day 1",
-                    "tasks": ["task 1", "task 2"]
-                    }}
-                ]
-                }}
-            ]
-            }}
+🧾 Format your response like this (valid JSON):
 
-            Return valid JSON only, and use all {days} days in your breakdown.
-            """
+{{
+  "workflow": [
+    {{
+      "goal": "First goal or phase",
+      "days": [
+        {{
+          "date": "Day 1",
+          "tasks": ["task 1", "task 2"]
+        }},
+        ...
+      ]
+    }},
+    {{
+      "goal": "Next goal or phase",
+      "days": [
+        {{
+          "date": "Day 4",
+          "tasks": ["task 1"]
+        }}
+      ]
+    }}
+  ]
+}}
+"""
 
 
     headers = {
