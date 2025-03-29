@@ -16,22 +16,41 @@ def generate_plan():
     task = data.get('task')
     days = data.get('days')
 
-    prompt = f'''You are a task planner. Break down the task: "{task}" over {days} days into a structured weekly plan. Each week should have a title and a goal. Each day should have a date label and a list of subtasks. Format your response as structured JSON like this:
+    prompt = f"""
+            You are a task planner. Break down the task: "{task}" over exactly {days} day(s). The task should be spread out across all {days} days — do not compress or shorten it. Do not return fewer than {days} days.
 
-{{
-  "workflow": [
-    {{
-      "week": "Week 1 (March 31 - April 4)",
-      "goal": "Your weekly goal here",
-      "days": [
-        {{
-          "date": "March 31 (Mon)",
-          "tasks": ["task 1", "task 2"]
-        }}
-      ]
-    }}
-  ]
-}}'''
+            Rules:
+            - Every 7 days, start a new week. For example:
+            - Days 1–7 = Week 1
+            - Days 8–14 = Week 2
+            - Days 15–21 = Week 3
+            - Each week must contain:
+            - A title like "Week 1", "Week 2", etc.
+            - A short goal summarizing that week's focus
+            - Each day must contain:
+            - A "date" like "Day 1", "Day 2", ..., up to "Day {days}"
+            - A list of subtasks for that day
+
+            Example format:
+
+            {{
+            "workflow": [
+                {{
+                "week": "Week 1",
+                "goal": "Your weekly goal",
+                "days": [
+                    {{
+                    "date": "Day 1",
+                    "tasks": ["task 1", "task 2"]
+                    }}
+                ]
+                }}
+            ]
+            }}
+
+            Return valid JSON only, and use all {days} days in your breakdown.
+            """
+
 
     headers = {
         'Authorization': f'Bearer {OPENAI_API_KEY}',
