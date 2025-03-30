@@ -240,81 +240,32 @@
   </div>
 
   <script>
-    function submitTask() {
-      const dummyResponse = {
-        workflow: [
-          {
-            week: "Week 1 (March 31 - April 4)",
-            goal: "Build + basic path following",
-            days: [
-              {
-                date: "March 31 (Mon)",
-                tasks: [
-                  "Unbox and test components (Pi, Pi Camera, motor driver, DC motors, wires)",
-                  "Set up Raspberry Pi with OS + OpenCV",
-                  "Connect and test camera + motor driver",
-                  "Check motor wiring and test with GPIO"
-                ]
-              },
-              {
-                date: "April 1-2 (Tue-Wed)",
-                tasks: [
-                  "Write line-following script in OpenCV",
-                  "Control motor direction based on camera input",
-                  "Tune basic movement to follow a straight path"
-                ]
-              },
-              {
-                date: "April 3-4 (Wed-Thu)",
-                tasks: [
-                  "Integrate full system",
-                  "Test on forked paths",
-                  "Begin logic for avoiding loops or repeated areas"
-                ]
-              }
-            ]
-          },
-          {
-            week: "Week 2 (April 6 - April 11)",
-            goal: "Smart navigation + loop handling",
-            days: [
-              {
-                date: "April 6-7 (Sun-Mon)",
-                tasks: [
-                  "Implement simple map memory or marker detection",
-                  "Add logic for detecting and avoiding loops",
-                  "Refactor code for clean integration"
-                ]
-              },
-              {
-                date: "April 8-10 (Mon-Wed)",
-                tasks: [
-                  "Field test on a full-length, looped path",
-                  "Tune thresholds, speed, and turning",
-                  "Polish movement and handling"
-                ]
-              },
-              {
-                date: "April 11 (Thu)",
-                tasks: [
-                  "Final test run – at least 3 successful trials",
-                  "Charge everything",
-                  "Pack tools, spare parts, backup SD card/code"
-                ]
-              },
-              {
-                date: "April 12 (Fri, Competition)",
-                tasks: []
-              }
-            ]
-          }
-        ]
-      };
+    async function submitTask() {
+      const task = document.getElementById("mainTask").value;
+      const days = document.getElementById("duration").value;
 
-      displayChecklist(dummyResponse.workflow);
-      document.getElementById("reviewSection").style.display = "block";
-      document.getElementById("checklistTitle").style.display = "block";
+      if (!task || !days) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/generate-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task, days })
+        });
+
+        const data = await response.json();
+        displayChecklist(data.workflow);
+        document.getElementById("reviewSection").style.display = "block";
+        document.getElementById("checklistTitle").style.display = "block";
+      } catch (error) {
+        console.error(error);
+        alert("Failed to fetch plan from AI.");
+      }
     }
+
 
     function displayChecklist(workflowData) {
       const checklistDiv = document.getElementById("checklist");
