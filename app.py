@@ -17,21 +17,28 @@ def generate_plan():
     days = data.get('days')
 
     prompt = f"""
-You are a task planner. Break down the task: "{task}" into a plan of exactly {days} day(s). Do not exceed {days} days in total.
+You are a task planner. Break down the task: "{task}" into a plan of less than or equal {days} day(s). Do not exceed {days} days in total.
 
-🛠️ Instructions:
+Instructions:
 - Do NOT use "Week 1", "Week 2", etc.
+- If it is possible to complete the task in less than {days} days, do so.
+- Make tasks smaller and more manageable.
+- There should be only one goal per day
+- Give more detailed tasks descriptions.
+- Next to task, include suggested time to complete it in minutes or hours.
+- Add additional notes if necessary.
 - Instead, group the breakdown by **goal or phase of work**.
 - Each goal block should include:
   - A clear "goal" title
   - A list of days with specific tasks
 - Start a new goal block **only** when the focus or phase of the work changes.
 
-📆 Each day should include:
+
+Each day should include:
 - A label like "Day 1", "Day 2", ..., up to "Day {days}"
 - A list of clear, actionable tasks for that day
 
-🧾 Format your response like this (valid JSON):
+Format your response like this (valid JSON):
 
 {{
   "workflow": [
@@ -56,6 +63,7 @@ You are a task planner. Break down the task: "{task}" into a plan of exactly {da
     }}
   ]
 }}
+
 """
 
 
@@ -72,20 +80,13 @@ You are a task planner. Break down the task: "{task}" into a plan of exactly {da
 
     try:
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        try:
-            reply = response.json()['choices'][0]['message']['content']
-            print("\n--- RAW AI RESPONSE ---\n", reply, "\n------------------------\n")
-            cleaned = reply.strip().replace("```json", "").replace("```", "")
-            parsed = json.loads(cleaned)
-            return jsonify({
-                "raw": reply,
-                "workflow": parsed['workflow']
-            })
-        except Exception as parse_error:
-            print("❌ Error parsing AI response:", parse_error)
-            print("💬 AI Raw Reply:\n", response.text)
-            return jsonify({"error": "Failed to parse AI response"}), 500
-        return jsonify(parsed)
+        reply = response.json()['choices'][0]['message']['content']
+        cleaned = reply.strip().replace("```json", "").replace("```", "")
+        parsed = json.loads(cleaned)
+
+        return jsonify({
+            "workflow": parsed['workflow'],
+        })
     except Exception as e:
         print("Error:", e)
         return jsonify({"error": "Failed to get response from OpenAI"}), 500
