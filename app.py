@@ -13,6 +13,11 @@ load_dotenv()  # ⬅️ Load environment variables from .env
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+@app.route("/")
+def index():
+    return "Hello, this is the root of the Flask app!"
+
+
 @app.route('/generate-plan', methods=['POST'])
 def generate_plan():
     data = request.get_json()
