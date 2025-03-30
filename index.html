@@ -11,7 +11,7 @@
       overflow: hidden;
       scroll-behavior: smooth;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #FFF7E6; /* This is a comment */
+      background-color: #FFF7E6;
     }
 
     .container {
@@ -60,7 +60,7 @@
       font-size: 22px;
       font-weight: bold;
     }
-    <!--ayam-->
+
     p.date-label {
       font-style: normal;
       font-weight: 600;
@@ -132,15 +132,16 @@
     }
 
     li {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 15px;
-      padding: 10px 16px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      background-color: #fff9f9;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 15px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #fff9f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
     li input[type="checkbox"] {
@@ -197,15 +198,55 @@
       border-radius: 10px;
     }
 
-    /* Firefox */
     progress::-moz-progress-bar {
       background-color: #D94848;
       border-radius: 10px;
     }
+
+    button.task-btn {
+  padding: 2px 6px;
+  min-width: 28px;
+  height: 28px;
+  font-size: 12px;
+  background-color: #FFECEC;
+  border: 1px solid #D94848;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+button.task-btn:hover {
+  background-color: #FFD6D6;
+}
+
+/* Tooltip styling */
+button.task-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1;
+}
+
+  button.task-btn:hover::after {
+  opacity: 1;
+}
   </style>
 </head>
 <body>
-
   <div class="container">
     <div id="left">
       <div id="taskInputSection">
@@ -249,6 +290,37 @@
         return;
       }
 
+      function displayChecklist(workflowData) {
+      const checklistDiv = document.getElementById("checklist");
+      checklistDiv.innerHTML = '';
+
+      workflowData.forEach((weekBlock) => {
+        const weekTitle = document.createElement("h4");
+        weekTitle.textContent = weekBlock.week;
+        checklistDiv.appendChild(weekTitle);
+
+        const goal = document.createElement("p");
+        goal.innerHTML = `<strong>Goal:</strong> ${weekBlock.goal}`;
+        checklistDiv.appendChild(goal);
+
+        weekBlock.days.forEach((day) => {
+          const dateTitle = document.createElement("p");
+          dateTitle.className = "date-label";
+          dateTitle.textContent = day.date;
+          checklistDiv.appendChild(dateTitle);
+
+          const ul = document.createElement("ul");
+
+          day.tasks.forEach((task) => {
+            const li = createTaskItem(task);
+            ul.appendChild(li);
+          });
+
+          checklistDiv.appendChild(ul);
+        });
+      });
+    }
+
       try {
         const response = await fetch("http://127.0.0.1:5000/generate-plan", {
           method: "POST",
@@ -266,12 +338,11 @@
       }
     }
 
-
     function displayChecklist(workflowData) {
       const checklistDiv = document.getElementById("checklist");
       checklistDiv.innerHTML = '';
 
-      workflowData.forEach(weekBlock => {
+      workflowData.forEach((weekBlock) => {
         const weekTitle = document.createElement("h4");
         weekTitle.textContent = weekBlock.week;
         checklistDiv.appendChild(weekTitle);
@@ -280,30 +351,71 @@
         goal.innerHTML = `<strong>Goal:</strong> ${weekBlock.goal}`;
         checklistDiv.appendChild(goal);
 
-        weekBlock.days.forEach(day => {
+        weekBlock.days.forEach((day) => {
           const dateTitle = document.createElement("p");
           dateTitle.className = "date-label";
-          dateTitle.textContent= day.date;
+          dateTitle.textContent = day.date;
           checklistDiv.appendChild(dateTitle);
 
           const ul = document.createElement("ul");
-          day.tasks.forEach((task, index) => {
-            const li = document.createElement("li");
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.id = `task-${index}-${day.date}`;
-            checkbox.onchange = updateProgress;
 
-            const span = document.createElement("span");
-            span.textContent = task;
-
-            li.appendChild(checkbox);
-            li.appendChild(span);
+          day.tasks.forEach((task) => {
+            const li = createTaskItem(task);
             ul.appendChild(li);
           });
+
           checklistDiv.appendChild(ul);
         });
       });
+    }
+
+    function createTaskItem(task, weekIdx, dayIdx, taskIdx) {
+      const li = document.createElement("li");
+
+      const leftPart = document.createElement("div");
+      leftPart.style.display = "flex";
+      leftPart.style.alignItems = "center";
+      leftPart.style.gap = "10px";
+
+      const rightPart = document.createElement("div");
+      rightPart.style.display = "flex";
+      rightPart.style.alignItems = "center";
+      rightPart.style.gap = "6px";
+      rightPart.style.marginLeft = "auto";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.onchange = updateProgress;
+
+      const span = document.createElement("span");
+      span.textContent = task;
+      span.contentEditable = true;
+      span.style.outline = "none";
+      span.style.cursor = "text";
+      span.style.flexGrow = "1";
+
+      span.addEventListener("blur", () => {
+        if (!span.textContent.trim()) {
+          span.textContent = task;
+        }
+      });
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "x";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.onclick = () => {
+        li.remove();
+        updateProgress();
+      };
+
+      leftPart.appendChild(checkbox);
+      leftPart.appendChild(span);
+      rightPart.appendChild(deleteBtn);
+
+      li.appendChild(leftPart);
+      li.appendChild(rightPart);
+
+      return li;
     }
 
     function updateProgress() {
@@ -313,49 +425,6 @@
       const progress = (checked / total) * 100;
       document.getElementById("progressBar").value = progress;
     }
-
-    function usePlan() {
-      document.getElementById("taskInputSection").style.display = "none";
-      document.getElementById("reviewSection").style.display = "none";
-    }
-
-    function regeneratePlan() {
-      document.getElementById("checklist").innerHTML = '';
-      document.getElementById("checklistTitle").style.display = "none";
-      document.getElementById("reviewSection").style.display = "none";
-    }
-
-    let pomodoroTimer;
-    let timeLeft = 25 * 60;
-
-    function startPomodoro() {
-      clearInterval(pomodoroTimer);
-      pomodoroTimer = setInterval(() => {
-        if (timeLeft <= 0) {
-          clearInterval(pomodoroTimer);
-          alert("Pomodoro complete! Take a break!");
-          return;
-        }
-        timeLeft--;
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = String(timeLeft % 60).padStart(2, '0');
-        document.getElementById("timer").textContent = `${minutes}:${seconds}`;
-      }, 1000);
-    }
-
-    function resetPomodoro() {
-      clearInterval(pomodoroTimer);
-      timeLeft = 25 * 60;
-      document.getElementById("timer").textContent = "25:00";
-    }
-
-    document.addEventListener('input', function (e) {
-      if (e.target.tagName.toLowerCase() === 'textarea') {
-        e.target.style.height = 'auto';
-        e.target.style.height = `${e.target.scrollHeight}px`;
-        e.target.scrollTop = 0;
-      }
-    });
   </script>
 </body>
 </html>
