@@ -7,8 +7,11 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# Replace with your OpenAI API key
-OPENAI_API_KEY = "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"
+import os
+from dotenv import load_dotenv
+load_dotenv()  # ⬅️ Load environment variables from .env
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 @app.route('/generate-plan', methods=['POST'])
 def generate_plan():
