@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Task Planner</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      scroll-behavior: smooth;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #FFF7E6;
+    }
+
+    .container {
+      display: flex;
+      width: 95%;
+      max-width: 1400px;
+      height: 90vh;
+      margin: auto;
+      margin-top: 5vh;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    #left, #right {
+      width: 50%;
+      padding: 40px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #left {
+      background-color: #FFF1F0;
+      align-items: flex-start;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    #right {
+      background-color: #f6f6e1;
+      align-items: center;
+    }
+
+    h2, h3 {
+      color: #D94848;
+      margin-bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    h4 {
+      margin: 30px 0 10px;
+      color: #8B0000;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    p.date-label {
+      font-style: normal;
+      font-weight: 600;
+      margin-top: 25px;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      border-left: 4px solid #8B0000;
+      background-color: #FFECEC;
+      color: #333;
+      border-radius: 6px;
+    }
+
+    textarea, input, button {
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin: 10px auto;
+      width: 100%;
+      font-size: 16px;
+      max-width: 500px;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 400;
+    }
+
+    textarea {
+      resize: none;
+      overflow: hidden;
+      line-height: 1.4;
+      min-height: 50px;
+    }
+
+    button {
+      background-color: #FFD6D6;
+      color: #8B0000;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #FFBABA;
+    }
+
+    #taskInputSection, #reviewSection {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    #checklistWrapper {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    #checklist {
+      width: 100%;
+    }
+
+    ul {
+      padding-left: 0;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      list-style: none;
+    }
+
+    li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 15px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #fff9f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    li input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #D94848;
+      border-radius: 4px;
+      background-color: #fff;
+      position: relative;
+      flex-shrink: 0;
+      margin: 0;
+    }
+
+    li input[type="checkbox"]:checked::before {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px;
+      color: #D94848;
+      font-weight: bold;
+    }
+
+    #progressBar {
+      width: 100%;
+      height: 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      background-color: #f5f5f5;
+    }
+
+    #timer {
+      font-size: 36px;
+      font-weight: bold;
+      color: #D94848;
+    }
+
+    #reviewSection button {
+      margin: 10px;
+      width: 40%;
+      max-width: 250px;
+    }
+
+    progress::-webkit-progress-bar {
+      background-color: #F5F5F5;
+      border-radius: 10px;
+    }
+
+    progress::-webkit-progress-value {
+      background-color: #D94848;
+      border-radius: 10px;
+    }
+
+    progress::-moz-progress-bar {
+      background-color: #D94848;
+      border-radius: 10px;
+    }
+
+    button.task-btn {
+  padding: 2px 6px;
+  min-width: 28px;
+  height: 28px;
+  font-size: 12px;
+  background-color: #FFECEC;
+  border: 1px solid #D94848;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+button.task-btn:hover {
+  background-color: #FFD6D6;
+}
+
+/* Tooltip styling */
+button.task-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 1;
+}
+
+#timer:hover { /* Tooltip for timer */
+  border-bottom: 1px dashed #D94848;
+  cursor: text;
+}
+
+  button.task-btn:hover::after {
+  opacity: 1;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="left">
+      <div id="taskInputSection">
+        <h2>Plan Your Task</h2>
+        <textarea id="mainTask" placeholder="e.g. I need to write a paper..." rows="2"></textarea>
+        <input type="number" id="duration" placeholder="Duration in days">
+        <button onclick="submitTask()">Generate Plan</button>
+      </div>
+
+      <div id="reviewSection" style="display: none;">
+        <h3>Does this breakdown work for you?</h3>
+        <div id="reviewButtons">
+          <button onclick="usePlan()">✅ Use This Plan</button>
+          <button onclick="regeneratePlan()">🔁 Regenerate</button>
+        </div>
+      </div>
+
+      <div id="checklistWrapper">
+        <h3 id="checklistTitle" style="display: none;">Workflow</h3>
+        <div id="checklist"></div>
+      </div>
+    </div>
+
+    <div id="right">
+      <h3>Progress <span id="progressPercent">(0%)</span></h3>
+      <progress id="progressBar" value="0" max="100"></progress>
+      <h2>Pomodoro Timer</h2>
+      <div id="timer" contenteditable="true" spellcheck="false" style="outline: none;">25:00</div>
+      <button onclick="startPomodoro()">Start</button>
+      <button onclick="pausePomodoro()">Pause</button>
+      <button onclick="resetPomodoro()">Reset</button>
+      
+    </div>
+  </div>
+
+  <script>
+    async function submitTask() {
+      const task = document.getElementById("mainTask").value;
+      const days = document.getElementById("duration").value;
+
+      if (!task || !days) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      function displayChecklist(workflowData) {
+      const checklistDiv = document.getElementById("checklist");
+      checklistDiv.innerHTML = '';
+
+      workflowData.forEach((weekBlock) => {
+        const weekTitle = document.createElement("h4");
+        weekTitle.textContent = weekBlock.week;
+        checklistDiv.appendChild(weekTitle);
+
+        const goal = document.createElement("h4");
+        goal.innerHTML = `<strong>Goal:</strong> ${weekBlock.goal}`;
+        checklistDiv.appendChild(goal);
+
+        weekBlock.days.forEach((day) => {
+          const dateTitle = document.createElement("p");
+          dateTitle.className = "date-label";
+          dateTitle.textContent = day.date;
+          checklistDiv.appendChild(dateTitle);
+
+          const ul = document.createElement("ul");
+
+          day.tasks.forEach((task) => {
+            const li = createTaskItem(task);
+            ul.appendChild(li);
+          });
+
+          checklistDiv.appendChild(ul);
+        });
+      });
+    }
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/generate-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task, days })
+        });
+
+        const data = await response.json();
+        displayChecklist(data.workflow);
+        document.getElementById("reviewSection").style.display = "block";
+        document.getElementById("checklistTitle").style.display = "block";
+      } catch (error) {
+        console.error(error);
+        alert("Failed to fetch plan from AI.");
+      }
+    }
+
+    function displayChecklist(workflowData) {
+      const checklistDiv = document.getElementById("checklist");
+      checklistDiv.innerHTML = '';
+
+      workflowData.forEach((weekBlock) => {
+        const weekTitle = document.createElement("h4");
+        weekTitle.textContent = weekBlock.week;
+        checklistDiv.appendChild(weekTitle);
+
+        const goal = document.createElement("p");
+        goal.innerHTML = `<strong>Goal:</strong> ${weekBlock.goal}`;
+        checklistDiv.appendChild(goal);
+
+        weekBlock.days.forEach((day) => {
+          const dateTitle = document.createElement("p");
+          dateTitle.className = "date-label";
+          dateTitle.textContent = day.date;
+          checklistDiv.appendChild(dateTitle);
+
+          const ul = document.createElement("ul");
+
+          day.tasks.forEach((task) => {
+            const li = createTaskItem(task);
+            ul.appendChild(li);
+          });
+
+          checklistDiv.appendChild(ul);
+        });
+      });
+    }
+
+    function createTaskItem(task, weekIdx, dayIdx, taskIdx) {
+      const li = document.createElement("li");
+
+      const leftPart = document.createElement("div");
+      leftPart.style.display = "flex";
+      leftPart.style.alignItems = "center";
+      leftPart.style.gap = "10px";
+
+      const rightPart = document.createElement("div");
+      rightPart.style.display = "flex";
+      rightPart.style.alignItems = "center";
+      rightPart.style.gap = "6px";
+      rightPart.style.marginLeft = "auto";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.onchange = updateProgress;
+
+      const span = document.createElement("span");
+      span.textContent = task;
+      span.contentEditable = true;
+      span.style.outline = "none";
+      span.style.cursor = "text";
+      span.style.flexGrow = "1";
+
+      span.addEventListener("blur", () => {
+        if (!span.textContent.trim()) {
+          span.textContent = task;
+        }
+      });
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "❌";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.onclick = () => {
+        li.remove();
+        updateProgress();
+      };
+
+      leftPart.appendChild(checkbox);
+      leftPart.appendChild(span);
+      rightPart.appendChild(deleteBtn);
+
+      li.appendChild(leftPart);
+      li.appendChild(rightPart);
+
+      return li;
+    }
+
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const total = checkboxes.length;
+      const progress = total === 0 ? 0 : (checked / total) * 100;
+
+      document.getElementById("progressBar").value = progress;
+      document.getElementById("progressPercent").textContent = `(${Math.round(progress)}%)`;
+    }
+
+
+    function usePlan() {
+       document.getElementById("taskInputSection").style.display = "none";
+       document.getElementById("reviewSection").style.display = "none";
+     }
+
+     let pomodoroTimer;
+     let timeLeft = 25 * 60;
+
+     function parseTime(str) {
+      const parts = str.split(":");
+      const minutes = parseInt(parts[0]);
+      const seconds = parseInt(parts[1]) || 0;
+      return (isNaN(minutes) ? 25 : minutes) * 60 + seconds;
+    }
+
+     function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const sec = String(seconds % 60).padStart(2, '0');
+      return `${minutes}:${sec}`;
+    }
+
+     function startPomodoro() {
+      clearInterval(pomodoroTimer);
+
+      const timerText = document.getElementById("timer").innerText.trim();
+      timeLeft = parseTime(timerText);
+
+      pomodoroTimer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(pomodoroTimer);
+          alert("Pomodoro complete! Take a break!");
+          return;
+        }
+        timeLeft--;
+        updateTimerDisplay();
+      }, 1000);
+
+      updateTimerDisplay();
+    }
+
+    function pausePomodoro() {
+      clearInterval(pomodoroTimer);
+    }
+
+    function resetPomodoro() {
+      clearInterval(pomodoroTimer);
+      timeLeft = 25 * 60;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      document.getElementById("timer").innerText = formatTime(timeLeft);
+    }
+
+
+  </script>
+</body>
+</html>
