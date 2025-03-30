@@ -58,9 +58,57 @@
       height: 100%;
     }
 
-    #right {
-      background-color: #f6f6e1;
+     #right {
+      background-color: #FFFBE6;
       align-items: center;
+      justify-content: flex-start;
+      padding-top: 100px;
+    }
+
+
+    #right h2 {
+      font-size: 20px;
+      color: #D94848;
+      margin-bottom: 10px;
+    }
+
+    #timer {
+      font-size: 36px;
+      font-weight: bold;
+      color: #D94848;
+      margin-bottom: 20px;
+    }
+
+    #right button {
+      width: 80%;
+      margin-bottom: 10px;
+    }
+
+    #right h3 {
+      color: #D94848;
+      font-size: 18px;
+      margin: 10px 0 6px;
+    }
+
+    progress {
+      width: 80%;
+      height: 18px;
+      border-radius: 10px;
+    }
+
+    progress::-webkit-progress-bar {
+      background-color: #f5f5f5;
+      border-radius: 10px;
+    }
+
+    progress::-webkit-progress-value {
+      background-color: #D94848;
+      border-radius: 10px;
+    }
+
+    progress::-moz-progress-bar {
+      background-color: #D94848;
+      border-radius: 10px;
     }
 
     h2, h3 {
@@ -129,6 +177,13 @@
       text-align: center;
     }
 
+    #reviewButtons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      width: 100%;
+    }
+
     #checklistWrapper {
       width: 100%;
       max-width: 600px;
@@ -149,16 +204,21 @@
     }
 
     li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    font-size: 15px;
-    padding: 10px 16px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    background-color: #fff9f9;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 15px;
+      padding: 10px 16px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background-color: #fff9f9;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    li:hover {
+      box-shadow: 0 0 10px #D94848;
+      transition: box-shadow 0.3s ease;
     }
 
     li input[type="checkbox"] {
@@ -184,133 +244,27 @@
       color: #D94848;
       font-weight: bold;
     }
-    
-    li:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
 
-    #progressBar {
-      width: 100%;
-      height: 20px;
-      border-radius: 10px;
-      margin-top: 10px;
-      background-color: #f5f5f5;
-    }
-
-    #timer {
-      font-size: 36px;
-      font-weight: bold;
+    .delete-btn {
+      background: none;
+      border: none !important;
+      outline: none !important;
       color: #D94848;
-    }
-
-    #reviewSection button {
-      margin: 10px;
-      width: 40%;
-      max-width: 250px;
-    }
-
-    progress::-webkit-progress-bar {
-      background-color: #F5F5F5;
-      border-radius: 10px;
-    }
-
-    progress::-webkit-progress-value {
-      background-color: #D94848;
-      border-radius: 10px;
-    }
-
-    progress::-moz-progress-bar {
-      background-color: #D94848;
-      border-radius: 10px;
-    }
-
-    button.task-btn,
-    button.delete-btn {
-      all: unset; /* Removes all default button styling */
+      opacity: 0.2;
+      font-size: 16px;
       cursor: pointer;
-      font-size: 16px;
-      margin-left: 8px;
-      color: #D94848;
-      border-radius: 50%;
-      padding: 4px;
-      transition: background 0.2s ease;
+      transition: opacity 0.2s ease;
     }
 
-    button.task-btn:hover {
-      background-color: #FFD6D6;
+    .delete-btn:hover {
+      opacity: 1;
+      outline: none !important;
+      border: none !important;
+      background: none !important;
+      box-shadow: none !important;
     }
-
-    /* Tooltip styling */
-    button.task-btn::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #333;
-      color: #fff;
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease-in-out;
-      z-index: 1;
-    }
-
-    .explanation-box {
-      background-color: #FFF9DC;
-      border-left: 5px solid #FFD700;
-      border-radius: 10px;
-      padding: 20px;
-      margin-top: 10px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      color: #8B0000;
-      font-size: 16px;
-      line-height: 1.5;
-    }
-
-    .explanation-box strong {
-      color: #D94848;
-    }
-
-
-    #timer:hover { /* Tooltip for timer */
-      border-bottom: 1px dashed #D94848;
-      cursor: text;
-    }
-
-    #pomodoroButtons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin: 10px 0 20px;
-      flex-wrap: wrap;
-    }
-
-    #pomodoroButtons button {
-      flex: 1;
-      max-width: 120px;
-    }
-
-    .sortable-ghost {
-      opacity: 0.4;
-      background: #ffecec;
-    }
-
-
-    button.task-btn:hover::after {
-    opacity: 1;
-
-    
-}
   </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <body>
   <div class="container">
     <div id="left">
@@ -330,30 +284,22 @@
       </div>
 
       <div id="checklistWrapper">
-        <button id="backButton" onclick="goBack()" style="display: none; margin-bottom: 20px;">⬅️ Back</button>
         <h3 id="checklistTitle" style="display: none;">Workflow</h3>
         <div id="checklist"></div>
       </div>
     </div>
 
     <div id="right">
-      <h3>Progress <span id="progressPercent">(0%)</span></h3>
-      <progress id="progressBar" value="0" max="100"></progress>
       <h2>Pomodoro Timer</h2>
-      <div id="timer" contenteditable="true" spellcheck="false" style="outline: none;">25:00</div>
-      <div id="pomodoroButtons">
-        <button onclick="startPomodoro()">Start</button>
-        <button onclick="pausePomodoro()">Pause</button>
-        <button onclick="resetPomodoro()">Reset</button>
-      </div>
-      <h2>💡 Detailed Explanation for Each Task</h2>
-      <div id="taskExplanation" class="explanation-box"></div>
-      
+      <div id="timer">25:00</div>
+      <button onclick="startPomodoro()">Start</button>
+      <button onclick="resetPomodoro()">Reset</button>
+      <h3>Progress</h3>
+      <progress id="progressBar" value="0" max="100"></progress>
     </div>
   </div>
 
   <script>
-
     async function submitTask() {
       const task = document.getElementById("mainTask").value;
       const days = document.getElementById("duration").value;
@@ -405,13 +351,6 @@
             const li = createTaskItem(task);
             ul.appendChild(li);
           });
-
-          Sortable.create(ul, {
-            animation: 150,
-            ghostClass: 'sortable-ghost',
-            onEnd: updateProgress,  // optional: recalc progress after reordering
-          });
-
 
           const addLi = document.createElement("li");
           addLi.style.padding = "4px 16px";
@@ -473,20 +412,14 @@
 
       const deleteBtn = document.createElement("button");
       deleteBtn.textContent = "x";
-      deleteBtn.className = "task-btn";
+      deleteBtn.className = "delete-btn";
       deleteBtn.onclick = () => {
         li.remove();
         updateProgress();
       };
 
-      const explainBtn = document.createElement("button");
-      explainBtn.textContent = "💡";
-      explainBtn.className = "task-btn";
-      explainBtn.onclick = () => explainTask(task);
-
       leftPart.appendChild(checkbox);
       leftPart.appendChild(span);
-      rightPart.appendChild(explainBtn);
       rightPart.appendChild(deleteBtn);
 
       li.appendChild(leftPart);
@@ -499,27 +432,16 @@
       const checkboxes = document.querySelectorAll('input[type="checkbox"]');
       const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
       const total = checkboxes.length;
-      const progress = total === 0 ? 0 : (checked / total) * 100;
-
+      const progress = (checked / total) * 100;
       document.getElementById("progressBar").value = progress;
-      document.getElementById("progressPercent").textContent = `(${Math.round(progress)}%)`;
     }
-
 
     function usePlan() {
       document.getElementById("taskInputSection").style.display = "none";
       document.getElementById("reviewSection").style.display = "none";
-      document.getElementById("backButton").style.display = "block";
     }
 
-    function goBack() {
-      document.getElementById("taskInputSection").style.display = "flex";
-      document.getElementById("reviewSection").style.display = "flex";
-      document.getElementById("backButton").style.display = "none";
-    }
-
-
-     async function regeneratePlan() {
+    async function regeneratePlan() {
       const task = document.getElementById("mainTask").value;
       const days = document.getElementById("duration").value;
 
@@ -544,81 +466,6 @@
         alert("Failed to regenerate plan.");
       }
     }
-
-     let pomodoroTimer;
-     let timeLeft = 25 * 60;
-
-     function parseTime(str) {
-      const parts = str.split(":");
-      const minutes = parseInt(parts[0]);
-      const seconds = parseInt(parts[1]) || 0;
-      return (isNaN(minutes) ? 25 : minutes) * 60 + seconds;
-    }
-
-     function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const sec = String(seconds % 60).padStart(2, '0');
-      return `${minutes}:${sec}`;
-    }
-
-     function startPomodoro() {
-      clearInterval(pomodoroTimer);
-
-      const timerText = document.getElementById("timer").innerText.trim();
-      timeLeft = parseTime(timerText);
-
-      pomodoroTimer = setInterval(() => {
-        if (timeLeft <= 0) {
-          clearInterval(pomodoroTimer);
-          alert("Pomodoro complete! Take a break!");
-          return;
-        }
-        timeLeft--;
-        updateTimerDisplay();
-      }, 1000);
-
-      updateTimerDisplay();
-    }
-
-    function pausePomodoro() {
-      clearInterval(pomodoroTimer);
-    }
-
-    function resetPomodoro() {
-      clearInterval(pomodoroTimer);
-      timeLeft = 25 * 60;
-      updateTimerDisplay();
-    }
-
-    function updateTimerDisplay() {
-      document.getElementById("timer").innerText = formatTime(timeLeft);
-    }
-
-    async function explainTask(taskText) {
-      try {
-        const response = await fetch("http://127.0.0.1:5000/explain-task", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ task: taskText })
-        });
-
-        const data = await response.json();
-
-        const box = document.getElementById("taskExplanation");
-        box.innerHTML = `
-          <strong>📝 ${taskText}</strong><br><br>
-          <strong>What it means:</strong><br>${data.what}<br><br>
-          <strong>Why it's important:</strong><br>${data.why}<br><br>
-          <strong>Helpful Tips:</strong><br>${data.tips}
-        `;
-      } catch (err) {
-        console.error(err);
-        alert("Failed to get explanation from AI.");
-      }
-    }
-
-
-
   </script>
 </body>
 </html>
