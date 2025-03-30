@@ -88,8 +88,9 @@ Format your response like this (valid JSON):
 
     try:
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        reply = response.json()['choices'][0]['message']['content']
+        response_data = response.json()
         print("OpenAI response:", response_data)
+        reply = response.json()['choices'][0]['message']['content']
         cleaned = reply.strip().replace("```json", "").replace("```", "")
         parsed = json.loads(cleaned)
 
