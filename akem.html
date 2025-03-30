@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Task Planner</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      scroll-behavior: smooth;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #FFF7E6;
+    }
+
+    .add-task-link {
+      font-size: 13px;
+      color: #D94848;
+      background: none;
+      border: none;
+      padding: 4px 0;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 4px;
+      align-self: flex-start;
+    }
+
+    .add-task-link:hover {
+      color: #8B0000;
+      text-decoration: none;
+    }
+
+    .container {
+      display: flex;
+      width: 95%;
+      max-width: 1400px;
+      height: 90vh;
+      margin: auto;
+      margin-top: 5vh;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    #left, #right {
+      width: 50%;
+      padding: 40px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #left {
+      background-color: #FFF1F0;
+      align-items: flex-start;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+     #right {
+      background-color: #FFFBE6;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 100px;
+    }
+
+
+    #right h2 {
+      font-size: 20px;
+      color: #D94848;
+      margin-bottom: 10px;
+    }
+
+    #timer {
+      font-size: 36px;
+      font-weight: bold;
+      color: #D94848;
+      margin-bottom: 20px;
+    }
+
+    #right button {
+      width: 80%;
+      margin-bottom: 10px;
+    }
+
+    #right h3 {
+      color: #D94848;
+      font-size: 18px;
+      margin: 10px 0 6px;
+    }
+
+    progress {
+      width: 80%;
+      height: 18px;
+      border-radius: 10px;
+    }
+
+    progress::-webkit-progress-bar {
+      background-color: #f5f5f5;
+      border-radius: 10px;
+    }
+
+    progress::-webkit-progress-value {
+      background-color: #D94848;
+      border-radius: 10px;
+    }
+
+    progress::-moz-progress-bar {
+      background-color: #D94848;
+      border-radius: 10px;
+    }
+
+    h2, h3 {
+      color: #D94848;
+      margin-bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    h4 {
+      margin: 30px 0 10px;
+      color: #8B0000;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    p.date-label {
+      font-style: normal;
+      font-weight: 600;
+      margin-top: 25px;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      border-left: 4px solid #8B0000;
+      background-color: #FFECEC;
+      color: #333;
+      border-radius: 6px;
+    }
+
+    textarea, input, button {
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin: 10px auto;
+      width: 100%;
+      font-size: 16px;
+      max-width: 500px;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 400;
+    }
+
+    textarea {
+      resize: none;
+      overflow: hidden;
+      line-height: 1.4;
+      min-height: 50px;
+    }
+
+    button {
+      background-color: #FFD6D6;
+      color: #8B0000;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #FFBABA;
+    }
+
+    #taskInputSection, #reviewSection {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    #reviewButtons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    #checklistWrapper {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    #checklist {
+      width: 100%;
+    }
+
+    ul {
+      padding-left: 0;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      list-style: none;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 15px;
+      padding: 10px 16px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background-color: #fff9f9;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    li:hover {
+      box-shadow: 0 0 10px #D94848;
+      transition: box-shadow 0.3s ease;
+    }
+
+    li input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #D94848;
+      border-radius: 4px;
+      background-color: #fff;
+      position: relative;
+      flex-shrink: 0;
+      margin: 0;
+    }
+
+    li input[type="checkbox"]:checked::before {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px;
+      color: #D94848;
+      font-weight: bold;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none !important;
+      outline: none !important;
+      color: #D94848;
+      opacity: 0.2;
+      font-size: 16px;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      opacity: 1;
+      outline: none !important;
+      border: none !important;
+      background: none !important;
+      box-shadow: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="left">
+      <div id="taskInputSection">
+        <h2>Plan Your Task</h2>
+        <textarea id="mainTask" placeholder="e.g. I need to write a paper..." rows="2"></textarea>
+        <input type="number" id="duration" placeholder="Duration in days">
+        <button onclick="submitTask()">Generate Plan</button>
+      </div>
+
+      <div id="reviewSection" style="display: none;">
+        <h3>Does this breakdown work for you?</h3>
+        <div id="reviewButtons">
+          <button onclick="usePlan()">✅ Use This Plan</button>
+          <button onclick="regeneratePlan()">🔁 Regenerate</button>
+        </div>
+      </div>
+
+      <div id="checklistWrapper">
+        <h3 id="checklistTitle" style="display: none;">Workflow</h3>
+        <div id="checklist"></div>
+      </div>
+    </div>
+
+    <div id="right">
+      <h2>Pomodoro Timer</h2>
+      <div id="timer">25:00</div>
+      <button onclick="startPomodoro()">Start</button>
+      <button onclick="resetPomodoro()">Reset</button>
+      <h3>Progress</h3>
+      <progress id="progressBar" value="0" max="100"></progress>
+    </div>
+  </div>
+
+  <script>
+    async function submitTask() {
+      const task = document.getElementById("mainTask").value;
+      const days = document.getElementById("duration").value;
+
+      if (!task || !days) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/generate-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task, days })
+        });
+
+        const data = await response.json();
+        displayChecklist(data.workflow);
+        document.getElementById("reviewSection").style.display = "block";
+        document.getElementById("checklistTitle").style.display = "block";
+      } catch (error) {
+        console.error(error);
+        alert("Failed to fetch plan from AI.");
+      }
+    }
+
+    function displayChecklist(workflowData) {
+      const checklistDiv = document.getElementById("checklist");
+      checklistDiv.innerHTML = '';
+
+      workflowData.forEach((weekBlock) => {
+        const weekTitle = document.createElement("h4");
+        weekTitle.textContent = weekBlock.week;
+        checklistDiv.appendChild(weekTitle);
+
+        const goal = document.createElement("h4");
+        goal.innerHTML = `<strong>Goal:</strong> ${weekBlock.goal}`;
+        checklistDiv.appendChild(goal);
+
+        weekBlock.days.forEach((day) => {
+          const dateTitle = document.createElement("p");
+          dateTitle.className = "date-label";
+          dateTitle.textContent = day.date;
+          checklistDiv.appendChild(dateTitle);
+
+          const ul = document.createElement("ul");
+
+          day.tasks.forEach((task) => {
+            const li = createTaskItem(task);
+            ul.appendChild(li);
+          });
+
+          const addLi = document.createElement("li");
+          addLi.style.padding = "4px 16px";
+          addLi.style.marginTop = "-4px";
+
+          const newTaskInput = document.createElement("input");
+          newTaskInput.placeholder = "New task...";
+          newTaskInput.style.flex = "1";
+          newTaskInput.style.border = "none";
+          newTaskInput.style.background = "transparent";
+          newTaskInput.style.outline = "none";
+          newTaskInput.style.fontSize = "14px";
+
+          newTaskInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter" && newTaskInput.value.trim()) {
+              const newTask = createTaskItem(newTaskInput.value.trim());
+              ul.insertBefore(newTask, addLi);
+              newTaskInput.value = "";
+              updateProgress();
+            }
+          });
+
+          addLi.appendChild(newTaskInput);
+          ul.appendChild(addLi);
+          checklistDiv.appendChild(ul);
+        });
+      });
+    }
+
+    function createTaskItem(task) {
+      const li = document.createElement("li");
+
+      const leftPart = document.createElement("div");
+      leftPart.style.display = "flex";
+      leftPart.style.alignItems = "center";
+      leftPart.style.gap = "10px";
+
+      const rightPart = document.createElement("div");
+      rightPart.style.display = "flex";
+      rightPart.style.alignItems = "center";
+      rightPart.style.marginLeft = "auto";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.onchange = updateProgress;
+
+      const span = document.createElement("span");
+      span.textContent = task;
+      span.contentEditable = true;
+      span.style.outline = "none";
+      span.style.cursor = "text";
+      span.style.flexGrow = "1";
+
+      span.addEventListener("blur", () => {
+        if (!span.textContent.trim()) {
+          span.textContent = task;
+        }
+      });
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "x";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.onclick = () => {
+        li.remove();
+        updateProgress();
+      };
+
+      leftPart.appendChild(checkbox);
+      leftPart.appendChild(span);
+      rightPart.appendChild(deleteBtn);
+
+      li.appendChild(leftPart);
+      li.appendChild(rightPart);
+
+      return li;
+    }
+
+    function updateProgress() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const total = checkboxes.length;
+      const progress = (checked / total) * 100;
+      document.getElementById("progressBar").value = progress;
+    }
+
+    function usePlan() {
+      document.getElementById("taskInputSection").style.display = "none";
+      document.getElementById("reviewSection").style.display = "none";
+    }
+
+    async function regeneratePlan() {
+      const task = document.getElementById("mainTask").value;
+      const days = document.getElementById("duration").value;
+
+      if (!task || !days) {
+        alert("Please enter both task and duration.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/generate-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ task, days })
+        });
+
+        const data = await response.json();
+        displayChecklist(data.workflow);
+        document.getElementById("reviewSection").style.display = "block";
+        document.getElementById("checklistTitle").style.display = "block";
+      } catch (error) {
+        console.error(error);
+        alert("Failed to regenerate plan.");
+      }
+    }
+  </script>
+</body>
+</html>
